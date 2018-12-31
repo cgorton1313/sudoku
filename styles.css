@@ -1,0 +1,11 @@
+table {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 80%;
+}
+
+table td {
+  width: 8%;
+  border: 1px solid #ddd;
+  padding: 6px;
+}
