@@ -7,10 +7,10 @@ function step() {
 
     deleteListsIfAlreadySolved();
     drawBoard();
-    
+
     checkRows();
     drawBoard();
-    
+
     checkColumns();
     drawBoard();
 
@@ -86,8 +86,8 @@ function checkSubGrids() {
 
 function pruneBySubGrid(y, x) {
     var tempList = Array.from(board[y][x].list);
-    var upperLeftX = Math.floor(x/3) * 3;
-    var upperLeftY = Math.floor(y/3) * 3;
+    var upperLeftX = Math.floor(x / 3) * 3;
+    var upperLeftY = Math.floor(y / 3) * 3;
 
     // foreach list item
     for (var i = 0; i < board[y][x].list.length; i++) {
@@ -98,7 +98,7 @@ function pruneBySubGrid(y, x) {
                 var answerToCheck = board[sgy][sgx].answer;
                 if (listItemValue == answerToCheck && answerToCheck != 0) {
                     var index = tempList.indexOf(listItemValue);
-                    tempList.splice(index,1);
+                    tempList.splice(index, 1);
                 }
             }
         }
@@ -146,7 +146,7 @@ function initBoard() {
     for (var y = 0; y < 9; y++) {
         var cellList = [];
         for (var x = 0; x < 9; x++) {
-            var cell = {list: [1, 2, 3, 4, 5, 6, 7, 8, 9], answer: 0};
+            var cell = { list: [1, 2, 3, 4, 5, 6, 7, 8, 9], answer: 0 };
             cellList.push(cell);
         }
         board.push(cellList);
@@ -217,7 +217,7 @@ function generateBoardHtml() {
         }
         gridHtml += "</tr>";
     }
-    
+
     gridHtml += "</table>";
 
     document.getElementById("grid").innerHTML = gridHtml;
@@ -230,11 +230,11 @@ function setBorders() {
         for (var td = 0; td < 9; td++) {
             if (tr == 2 || tr == 5) {
                 var id = tr.toString() + td.toString();
-                document.getElementById(id).style.borderBottom = "5px solid black"; 
+                document.getElementById(id).style.borderBottom = "5px solid black";
             }
             if (td == 2 || td == 5) {
                 var id = tr.toString() + td.toString();
-                document.getElementById(id).style.borderRight = "5px solid black"; 
+                document.getElementById(id).style.borderRight = "5px solid black";
             }
         }
     }
