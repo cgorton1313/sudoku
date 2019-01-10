@@ -197,21 +197,23 @@ function drawBoard() {
     for (var tr = 0; tr < 9; tr++) {
         for (var td = 0; td < 9; td++) {
             var id = tr.toString() + td.toString();
-            document.getElementById(id).innerHTML = board[tr][td].list + "<br/><strong>" + board[tr][td].answer + "</strong>";
+            //document.getElementById(id).innerHTML = board[tr][td].list + "<br/><strong>" + board[tr][td].answer + "</strong>";
             if (board[tr][td].answer != 0) {
-                document.getElementById(id).style.backgroundColor = "yellow";
+                document.getElementById(id).innerHTML = "<strong>" + board[tr][td].answer + "</strong>";
+                document.getElementById(id).className = "table-success";
             }
         }
     }
 }
 
 function generateBoardHtml() {
-    gridHtml += "<table>";
+    gridHtml += "<table class=\"table table-bordered table-sm\">";
 
     for (var tr = 0; tr < 9; tr++) {
         gridHtml += "<tr>";
         for (var td = 0; td < 9; td++) {
-            gridHtml += "<td id=" + tr + td + ">";
+            var id = tr.toString() + td.toString();
+            gridHtml += "<td id=" + id + " align=\"center\"></td>";
         }
         gridHtml += "</tr>";
     }
@@ -219,4 +221,21 @@ function generateBoardHtml() {
     gridHtml += "</table>";
 
     document.getElementById("grid").innerHTML = gridHtml;
+
+    setBorders();
+}
+
+function setBorders() {
+    for (var tr = 0; tr < 9; tr++) {
+        for (var td = 0; td < 9; td++) {
+            if (tr == 2 || tr == 5) {
+                var id = tr.toString() + td.toString();
+                document.getElementById(id).style.borderBottom = "5px solid black"; 
+            }
+            if (td == 2 || td == 5) {
+                var id = tr.toString() + td.toString();
+                document.getElementById(id).style.borderRight = "5px solid black"; 
+            }
+        }
+    }
 }
