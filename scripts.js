@@ -4,9 +4,15 @@ var board = [];
 
 function step() {
     deleteListsIfAlreadySolved();
+    drawBoard();
     checkRows();
+    drawBoard();
     checkColumns();
+    drawBoard();
     checkSubGrids();
+    drawBoard();
+    checkSubGridOrphanCandidates();
+    drawBoard();
     checkForAnswers();
     drawBoard();
     checkIfDone();
@@ -98,6 +104,50 @@ function pruneBySubGrid(y, x) {
                 }
             }
         }
+    }
+    return tempList;
+}
+
+// For each cell, check its candidates for uniqueness within the sub-grid
+function checkSubGridOrphanCandidates() {
+    for (var y = 0; y < 9; y++) {
+        for (var x = 0; x < 9; x++) {
+            if (board[y][x].answer == 0) {
+                board[y][x].list = Array.from(pruneOrphanCandidatesBySubGrid(y, x));
+            }
+        }
+    }
+}
+
+// For a given cell, check whether any candidates is unique within the sub-grid and if so, return a list of 1
+function pruneOrphanCandidatesBySubGrid(y, x) {
+    var tempList = Array.from(board[y][x].list);
+    var upperLeftX = Math.floor(x / 3) * 3;
+    var upperLeftY = Math.floor(y / 3) * 3;
+    var candidateIsUnique = true;
+
+    // for each candidate left on the list
+    for (var i = 0; i < board[y][x].list.length; i++) {
+        var candidate = board[y][x].list[i];
+        // check all sub-grid cells for the same candidate value
+        for (var sgy = upperLeftY; sgy < upperLeftY + 3; sgy++) {
+            for (var sgx = upperLeftX; sgx < upperLeftX + 3; sgx++) {
+                if (!(sgy == y && sgx == x)) { // not looking at itself
+                    // for each candidate in the checked cell
+                    for (var j = 0; j < board[sgy][sgx].list.length; j++) {
+                        if (board[sgy][sgx].list[j] == candidate) {
+                            candidateIsUnique = false;
+                        }
+                    }
+                }
+            }
+        }
+        if (candidateIsUnique) {
+            console.log("Found unique candidate = " + candidate + " at x = " + x + " | y = " + y);
+            tempList = [candidate];
+            return tempList;
+        }
+        candidateIsUnique = true;
     }
     return tempList;
 }
