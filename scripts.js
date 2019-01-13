@@ -17,6 +17,9 @@ function step() {
     drawBoard();
     checkSubColumnsForConstraints();
     drawBoard();
+    checkRowsForUniquePossibilities();
+    checkColumnsForUniquePossibilities();
+    drawBoard();
     checkForAnswers();
     drawBoard();
     //checkIfDone();
@@ -87,6 +90,76 @@ function checkSubGrids() {
             }
         }
     }
+}
+
+function checkRowsForUniquePossibilities() {
+    for (var row = 0; row < 9; row++) {
+        checkRowForUniquePossibilities(row);
+    }
+}
+
+function checkRowForUniquePossibilities(row) {
+    // for each cell in row
+    for (var column = 0; column < 9; column++) {
+        // for each possibility in cell
+        for (var j = 0; j < board[row][column].list.length; j++) {
+            var candidate = board[row][column].list[j];
+            if (candidateIsUniqueInRow(candidate, row, column)) {
+                board[row][column].answer = candidate;
+            }
+        }
+    }
+}
+
+function candidateIsUniqueInRow(candidateBeingChecked, rowBeingChecked, columnBeingChecked) {
+    var tempCandidateIsUniqueInRow = true;
+    // for each cell in row, except in column being checked
+    for (var column = 0; column < 9; column++) {
+        if (column != columnBeingChecked) {
+            // for each candidate
+            for (var candidate = 0; candidate < board[rowBeingChecked][column].list.length; candidate++) {
+                if (board[rowBeingChecked][column].list[candidate] == candidateBeingChecked) {
+                    tempCandidateIsUniqueInRow = false;
+                }
+            }
+        }
+    }
+    return tempCandidateIsUniqueInRow;
+}
+
+function checkColumnsForUniquePossibilities() {
+    for (var column = 0; column < 9; column++) {
+        checkColumnForUniquePossibilities(column);
+    } 
+}
+
+function checkColumnForUniquePossibilities(column) {
+    // for each cell in column
+    for (var row = 0; row < 9; row++) {
+        // for each possibility in cell
+        for (var j = 0; j < board[row][column].list.length; j++) {
+            var candidate = board[row][column].list[j];
+            if (candidateIsUniqueInColumn(candidate, row, column)) {
+                board[row][column].answer = candidate;
+            }
+        }
+    }
+}
+
+function candidateIsUniqueInColumn(candidateBeingChecked, rowBeingChecked, columnBeingChecked) {
+    var tempCandidateIsUniqueInRow = true;
+    // for each cell in column, except in row being checked
+    for (var row = 0; row < 9; row++) {
+        if (row != rowBeingChecked) {
+            // for each candidate
+            for (var candidate = 0; candidate < board[row][columnBeingChecked].list.length; candidate++) {
+                if (board[row][columnBeingChecked].list[candidate] == candidateBeingChecked) {
+                    tempCandidateIsUniqueInRow = false;
+                }
+            }
+        }
+    }
+    return tempCandidateIsUniqueInRow;
 }
 
 // For each sub-row (a row within a sub-grid), check if it is constrained to 2 or 3 values
