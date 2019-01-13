@@ -13,9 +13,13 @@ function step() {
     drawBoard();
     checkSubGridOrphanCandidates();
     drawBoard();
+    checkSubRowsForConstraints();
+    drawBoard();
+    checkSubColumnsForConstraints();
+    drawBoard();
     checkForAnswers();
     drawBoard();
-    checkIfDone();
+    //checkIfDone();
 }
 
 function checkIfDone() {
@@ -83,6 +87,120 @@ function checkSubGrids() {
             }
         }
     }
+}
+
+// For each sub-row (a row within a sub-grid), check if it is constrained to 2 or 3 values
+function checkSubRowsForConstraints() {
+    for (var y = 0; y < 9; y++) {
+        for (var x = 0; x < 9; x+=3) {
+            checkSubRowForConstraints(y, x);
+        }
+    }
+}
+
+// For each sub-column (a column within a sub-grid), check if it is constrained to 2 or 3 values
+function checkSubColumnsForConstraints() {
+    for (var x = 0; x < 9; x++) {
+        for (var y = 0; y < 9; y+=3) {
+            checkSubColumnForConstraints(y, x);
+        }
+    }
+}
+
+// For a given sub-row, check the unique values and if it's 2 or 3, remove those values from the outer row
+function checkSubRowForConstraints(y, x) {
+    numberOfUnsolvedCellsInSubRow = getNumberOfUnsolvedCellsInSubRow(x, y);
+    var uniquePossibilitiesInSubRow = getUniquePossibilitiesInSubRow(x, y);
+    if (uniquePossibilitiesInSubRow.length == numberOfUnsolvedCellsInSubRow) {
+        removePossibilitiesFromOtherSubRows(uniquePossibilitiesInSubRow, x, y);
+    }
+}
+
+// For a given sub-column, check the unique values and if it's 2 or 3, remove those values from the outer column
+function checkSubColumnForConstraints(y, x) {
+    numberOfUnsolvedCellsInSubColumn = getNumberOfUnsolvedCellsInSubColumn(x, y);
+    var uniquePossibilitiesInSubColumn = getUniquePossibilitiesInSubColumn(x, y);
+    if (uniquePossibilitiesInSubColumn.length == numberOfUnsolvedCellsInSubColumn) {
+        removePossibilitiesFromOtherSubColumns(uniquePossibilitiesInSubColumn, x, y);
+    }
+}
+
+// Take a list of possible answers and remove those values from other lists
+function removePossibilitiesFromOtherSubRows(possibilities, x, y) {
+    // For each cell in the row
+    for (var i = 0; i < 9; i++) {
+        if (i != x && i != (x+1) && i != (x+2)) { // we're in an outer row
+            board[y][i].list = Array.from(removePossibilitiesFromList(possibilities, board[y][i].list));
+        }
+    }
+}
+
+// Take a list of possible answers and remove those values from other lists
+function removePossibilitiesFromOtherSubColumns(possibilities, x, y) {
+    // For each cell in the column
+    for (var i = 0; i < 9; i++) {
+        if (i != y && i != (y+1) && i != (y+2)) { // we're in an outer column
+            board[i][x].list = Array.from(removePossibilitiesFromList(possibilities, board[i][x].list));
+        }
+    }
+}
+
+function removePossibilitiesFromList(removeThese, removeFrom) {
+    var tempList = Array.from(removeFrom);
+    for (var i = 0; i < removeThese.length; i++) {
+        for (var j = 0; j < tempList.length; j++) {
+            if (tempList[j] == removeThese[i]) {
+                tempList.splice(j,1);
+            }
+        }
+    }
+    return tempList;
+}
+
+function getUniquePossibilitiesInSubRow(x, y) {
+    var listOfUniquePossibilities = [];
+    for (var subRowX = x; subRowX < (x + 3); subRowX++) {
+        if (board[y][subRowX].answer == 0) {
+            listOfUniquePossibilities = listOfUniquePossibilities.concat(board[y][subRowX].list);
+        }
+    }
+    let unique = [...new Set(listOfUniquePossibilities)];
+    return unique;
+}
+
+function getUniquePossibilitiesInSubColumn(x, y) {
+    var listOfUniquePossibilities = [];
+    for (var subColumnY = y; subColumnY < (y + 3); subColumnY++) {
+        if (board[subColumnY][x].answer == 0) {
+            listOfUniquePossibilities = listOfUniquePossibilities.concat(board[subColumnY][x].list);
+        }
+    }
+    let unique = [...new Set(listOfUniquePossibilities)];
+    return unique;
+}
+
+function onlyUnique(value, index, self) { 
+    return self.indexOf(value) === index;
+}
+
+function getNumberOfUnsolvedCellsInSubRow(x, y) {
+    var count = 0;
+    for (var subRowX = x; subRowX < (x + 3); subRowX++) {
+        if (board[y][subRowX].answer == 0) {
+            count++;
+        }
+    }
+    return count;
+}
+
+function getNumberOfUnsolvedCellsInSubColumn(x, y) {
+    var count = 0;
+    for (var subColumnY = y; subColumnY < (y + 3); subColumnY++) {
+        if (board[subColumnY][x].answer == 0) {
+            count++;
+        }
+    }
+    return count;
 }
 
 // For a given cell, return a list of candidates, having pruned any that are already found in the same sub-grid
@@ -201,7 +319,8 @@ function initBoardData() {
     }
 
     //loadSimpleBoard();
-    loadMediumBoard();
+    //loadMediumBoard();
+    loadHardBoard();
 
     deleteListsIfAlreadySolved();
 }
@@ -278,6 +397,44 @@ function loadMediumBoard() {
 
     board[8][4].answer = 3;
     board[8][8].answer = 1;
+}
+
+function loadHardBoard() {
+    board[0][0].answer = 7;
+    board[0][1].answer = 5;
+    board[0][3].answer = 2;
+    board[0][5].answer = 1;
+
+    board[1][0].answer = 8;
+    board[1][3].answer = 4;
+    board[1][7].answer = 5;
+
+    board[2][0].answer = 1;
+    board[2][2].answer = 2;
+    board[2][3].answer = 8;
+    board[2][4].answer = 3;
+    board[2][8].answer = 4;
+
+    board[3][0].answer = 5;
+    board[3][5].answer = 7;
+    board[3][7].answer = 2;
+
+    board[4][1].answer = 4;
+    board[4][3].answer = 3;
+    board[4][7].answer = 9;
+    board[4][8].answer = 1;
+
+    board[5][2].answer = 1;
+    board[5][6].answer = 3;
+
+    board[6][1].answer = 7;
+
+    board[7][6].answer = 8;
+    board[7][8].answer = 3;
+
+    board[8][2].answer = 8;
+    board[8][4].answer = 4;
+    board[8][6].answer = 2;
 }
 
 function drawBoard() {
