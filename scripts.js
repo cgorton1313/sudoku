@@ -1,6 +1,6 @@
 var gridHtml = "";
 var possibilities = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-var board = [];
+var board = []; // board[row][column] means go down to the row, over to the column
 
 function step() {
     deleteListsIfAlreadySolved();
@@ -19,6 +19,10 @@ function step() {
     drawBoard();
     checkRowsForUniquePossibilities();
     checkColumnsForUniquePossibilities();
+    drawBoard();
+    checkRowsForSimilarCandidatePairs();
+    drawBoard();
+    checkColumnsForSimilarCandidatePairs();
     drawBoard();
     checkForAnswers();
     drawBoard();
@@ -90,6 +94,81 @@ function checkSubGrids() {
             }
         }
     }
+}
+
+// Check rows for candidate pairs
+function checkRowsForSimilarCandidatePairs() {
+    for (var row = 0; row < 9; row++) {
+        checkRowForSimilarCandidatePairs(row);
+    }
+}
+
+// Check columns for candidate pairs
+function checkColumnsForSimilarCandidatePairs() {
+    for (var column = 0; column < 9; column++) {
+        checkColumnForSimilarCandidatePairs(column);
+    }
+}
+
+// Check row for candidate pairs and remove those values from other cells in that row
+function checkRowForSimilarCandidatePairs(row) {
+    for (var column = 0; column < 9; column++) {
+        var cell = board[row][column];
+        if (cell.list.length == 2) {
+            // check for another similar pair to the right
+            for (var otherColumn = (column + 1); otherColumn < 9; otherColumn++) {
+                if (candidateListsAreTheSame(board[row][column].list, board[row][otherColumn].list)) {
+                    removeTheseCandidatesFromOtherCellsInRow(row, column, otherColumn);
+                }
+            }
+        }
+    }
+}
+
+// Check column for candidate pairs and remove those values from other cells in that column
+function checkColumnForSimilarCandidatePairs(column) {
+    for (var row = 0; row < 9; row++) {
+        var cell = board[row][column];
+        if (cell.list.length == 2) {
+            // check for another similar pair to the below
+            for (var otherRow = (row + 1); otherRow < 9; otherRow++) {
+                if (candidateListsAreTheSame(board[row][column].list, board[otherRow][column].list)) {
+                    removeTheseCandidatesFromOtherCellsInColumn(row, column, otherRow);
+                }
+            }
+        }
+    }
+}
+
+function removeTheseCandidatesFromOtherCellsInRow(row, column, otherColumn) {
+    for (var i = 0; i < 9; i++) {
+        if (i != column && i != otherColumn) { // we're looking at another cell
+            board[row][i].list = Array.from(removePossibilitiesFromList(board[row][column].list, board[row][i].list));
+        }
+    }
+}
+
+function removeTheseCandidatesFromOtherCellsInColumn(row, column, otherRow) {
+    for (var i = 0; i < 9; i++) {
+        if (i != row && i != otherRow) { // we're looking at another cell
+            board[i][column].list = Array.from(removePossibilitiesFromList(board[row][column].list, board[i][column].list));
+        }
+    }
+}
+
+function candidateListsAreTheSame(list1, list2) {
+    var temp = true;
+    if (list1.length != list2.length) {
+        temp = false;
+    } else {
+        // check every item
+        for (var i = 0; i < list1.length; i++) {
+            if (list1[i] != list2[i]) {
+                temp = false;
+            }
+        }
+    }
+    return temp;
 }
 
 function checkRowsForUniquePossibilities() {
@@ -218,6 +297,7 @@ function removePossibilitiesFromOtherSubColumns(possibilities, x, y) {
     }
 }
 
+// Return an array that is the difference b/w two arrays
 function removePossibilitiesFromList(removeThese, removeFrom) {
     var tempList = Array.from(removeFrom);
     for (var i = 0; i < removeThese.length; i++) {
@@ -334,7 +414,6 @@ function pruneOrphanCandidatesBySubGrid(y, x) {
             }
         }
         if (candidateIsUnique) {
-            console.log("Found unique candidate = " + candidate + " at x = " + x + " | y = " + y);
             tempList = [candidate];
             return tempList;
         }
