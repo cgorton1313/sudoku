@@ -593,7 +593,7 @@ function drawBoard() {
     for (var tr = 0; tr < 9; tr++) {
         for (var td = 0; td < 9; td++) {
             var id = tr.toString() + td.toString();
-            document.getElementById(id).innerHTML = board[tr][td].list + "<br/><strong>" + board[tr][td].answer + "</strong>";
+            //document.getElementById(id).innerHTML = board[tr][td].list + "<br/><strong>" + board[tr][td].answer + "</strong>";
             if (board[tr][td].answer != 0) {
                 document.getElementById(id).innerHTML = "<strong>" + board[tr][td].answer + "</strong>";
                 document.getElementById(id).className = "table-success";
