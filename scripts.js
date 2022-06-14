@@ -472,7 +472,7 @@ function initBoardData() {
 
     //loadSimpleBoard();
     //loadMediumBoard();
-    loadHardBoard();
+    loadExpertBoard();
 
     deleteListsIfAlreadySolved();
 }
@@ -587,6 +587,39 @@ function loadHardBoard() {
     board[8][2].answer = 8;
     board[8][4].answer = 4;
     board[8][6].answer = 2;
+}
+
+function loadExpertBoard() {
+    board[0][3].answer = 7;
+    board[0][4].answer = 2;
+    board[0][5].answer = 4;
+
+    board[1][0].answer = 1;
+    board[1][4].answer = 9;
+
+    board[2][0].answer = 9;
+    board[2][2].answer = 6;
+    board[2][4].answer = 3;
+
+    board[3][0].answer = 5;
+    board[3][1].answer = 8;
+    board[3][7].answer = 6;
+
+    board[4][5].answer = 7;
+    board[4][7].answer = 3;
+
+    board[5][3].answer = 8;
+    board[5][6].answer = 9;
+
+    board[6][2].answer = 2;
+    board[6][3].answer = 3;
+    board[6][8].answer = 7;
+
+    board[7][1].answer = 9;
+    board[7][6].answer = 4;
+    board[7][8].answer = 2;
+
+    board[8][2].answer = 4;
 }
 
 function drawBoard() {
